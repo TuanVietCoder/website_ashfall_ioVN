@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Trang thử hiệu ứng rồng nền cho Ashfall.">
+<title>Thử nền rồng — Ashfall</title>
+<link rel="icon" type="image/jpeg" href="assets/tuanviet-studio-logo.jpg?v=2">
+<link rel="preload" as="image" href="assets/rong-ngu.webp">
+<link rel="preload" as="image" href="assets/rong-thuc.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/base.css?v=10">
+<style>
+  html, body{ height:100%; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font-body); -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+
+  /* ----------------------------------------------------------- sân khấu --- */
+  .san{
+    position:fixed; inset:0;
+    cursor:pointer;
+    /* không để trình duyệt hiểu nhầm cú chạm thành thao tác chọn chữ */
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;
+  }
+  /* Ảnh phải CAO HƠN khung thì object-position mới kéo lên xuống được. Để vừa
+     khít như trước thì đặt bao nhiêu phần trăm cũng vô nghĩa, và mặt rồng rơi
+     đúng vào chỗ đặt chữ. */
+  .san__anh{
+    position:absolute; left:0; top:0;
+    width:100%; height:118%;
+    object-fit:cover; object-position:center 20%;
+    transition:opacity .9s ease;
+  }
+  /* lớp rồng thức nằm đè lên, mặc định trong suốt */
+  #thuc{ opacity:0; }
+  .san.day #thuc{ opacity:1; }
+
+  /* thở: cả khung phình ra thu vào rất khẽ, chỉ khi đang ngủ */
+  @media (prefers-reduced-motion:no-preference){
+    .san__khung{
+      position:absolute; inset:-1.5%;
+      animation:tho 7s ease-in-out infinite;
+      transform-origin:50% 55%;
+    }
+    .san.day .san__khung{ animation:tho-manh 4.5s ease-in-out infinite; }
+  }
+  @keyframes tho{
+    0%,100%{ transform:scale(1); }
+    50%    { transform:scale(1.014); }
+  }
+  @keyframes tho-manh{
+    0%,100%{ transform:scale(1.008); }
+    50%    { transform:scale(1.026); }
+  }
+
+  /* quầng lửa toả ra từ hốc mắt khi rồng thức */
+  .san__quang{
+    position:absolute; inset:0; pointer-events:none; opacity:0;
+    background:radial-gradient(ellipse 36% 26% at 50% 47%,
+      rgba(255,157,71,.26), rgba(207,75,62,.10) 45%, transparent 72%);
+    transition:opacity 1.1s ease;
+    mix-blend-mode:screen;
+  }
+  .san.day .san__quang{ opacity:1; }
+  @media (prefers-reduced-motion:no-preference){
+    .san.day .san__quang{ animation:thoi 3.4s ease-in-out infinite; }
+  }
+  @keyframes thoi{ 0%,100%{ opacity:.78; } 50%{ opacity:1; } }
+
+  /* tối bớt rìa khung cho chữ nổi lên */
+  .san__toi{
+    position:absolute; inset:0; pointer-events:none;
+    /* chỉ tối hai đầu khung — giữa phải sáng để còn thấy rồng */
+    background:
+      linear-gradient(180deg,
+        rgba(16,13,10,.72) 0%, rgba(16,13,10,.14) 18%,
+        transparent 42%, rgba(16,13,10,.34) 70%,
+        rgba(16,13,10,.86) 90%, rgba(16,13,10,.97) 100%);
+  }
+
+  /* ------------------------------------------------------------- tro bay --- */
+  .tro{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+  .tro i{
+    position:absolute; bottom:-12px;
+    width:2px; height:2px; border-radius:50%;
+    background:var(--ember); opacity:0;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .tro i{ animation:bay linear infinite; }
+  }
+  @keyframes bay{
+    0%  { transform:translateY(0) translateX(0); opacity:0; }
+    12% { opacity:.85; }
+    100%{ transform:translateY(-104vh) translateX(var(--lech,20px)); opacity:0; }
+  }
+
+  /* --------------------------------------------------------------- chữ --- */
+  .chu{
+    position:relative; z-index:2; height:100%;
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:28px 26px calc(34px + env(safe-area-inset-bottom));
+    pointer-events:none;
+  }
+  /* gom tiêu đề, mô tả và nút xuống đáy — mặt rồng ở giữa phải để trống */
+  .duoi{ display:flex; flex-direction:column; align-items:center; gap:22px; }
+  .chu a, .chu button{ pointer-events:auto; }
+
+  .dau{ display:flex; justify-content:space-between; align-items:center; gap:14px; }
+  .ve{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--muted-2); text-decoration:none;
+  }
+  .ve:hover{ color:var(--ember); }
+  .nhan{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--muted-2);
+    border:1px solid var(--line-strong); border-radius:999px; padding:5px 13px;
+  }
+
+  .giua{ text-align:center; }
+  .giua h1{ text-wrap:balance;
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(1.8rem, 5.2vw, 3.4rem); line-height:1.12; margin:0;
+    text-shadow:0 2px 40px rgba(16,13,10,.9);
+  }
+  .giua p{
+    margin:14px auto 0; max-width:40ch;
+    font-size:1rem; line-height:1.7; color:var(--muted);
+    text-shadow:0 2px 20px rgba(16,13,10,.95);
+  }
+
+  .cuoi{ display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; }
+  .goi{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--muted-2);
+    background:none; border:1px solid var(--line-strong); border-radius:999px;
+    padding:11px 22px; cursor:pointer;
+  }
+  .goi:hover{ color:var(--ink); border-color:var(--ember-dim); }
+  :focus-visible{ outline:2px solid var(--ember); outline-offset:4px; border-radius:999px; }
+
+  @media (max-width:620px){
+    .chu{ padding:18px 16px calc(20px + env(safe-area-inset-bottom)); }
+    .giua p{ font-size:.94rem; }
+    .san__anh{ height:126%; object-position:center 14%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="san" id="san">
+  <div class="san__khung">
+    <img class="san__anh" id="ngu"  src="assets/rong-ngu.webp"  alt="Một con rồng khổng lồ phủ tro đang ngủ, đầu hướng về phía người xem, mắt nhắm.">
+    <img class="san__anh" id="thuc" src="assets/rong-thuc.webp" alt="" aria-hidden="true">
+  </div>
+  <div class="san__quang" aria-hidden="true"></div>
+  <div class="tro" id="tro" aria-hidden="true"></div>
+  <div class="san__toi" aria-hidden="true"></div>
+</div>
+
+<div class="chu">
+  <div class="dau">
+    <a class="ve" href="index.html">← Về trang chủ</a>
+    <span class="nhan">Trang thử</span>
+  </div>
+
+  <div class="duoi">
+    <div class="giua">
+      <h1 id="tieu">Nó vẫn đang ngủ.</h1>
+      <p id="mo">Chạm vào bất cứ đâu để đánh thức. Nhưng hãy chắc là bạn muốn nó nhìn mình.</p>
+    </div>
+    <button class="goi" id="nut" type="button" aria-pressed="false">Đánh thức rồng</button>
+  </div>
+</div>
+
+<p class="sr" id="bao" role="status" aria-live="polite"
+   style="position:fixed;top:0;left:0;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap"></p>
+
+<script>
+(function(){
+  var san = document.getElementById('san');
+  var nut = document.getElementById('nut');
+  var tieu = document.getElementById('tieu');
+  var mo = document.getElementById('mo');
+  var bao = document.getElementById('bao');
+  var thuc = false;
+
+  var CHU = {
+    ngu:  { tieu:'Nó vẫn đang ngủ.',
+            mo:'Chạm vào bất cứ đâu để đánh thức. Nhưng hãy chắc là bạn muốn nó nhìn mình.',
+            nut:'Đánh thức rồng', bao:'Rồng đang ngủ.' },
+    thuc: { tieu:'Nó đã thấy bạn.',
+            mo:'Bảy vị vua đã hắc hóa. Thứ này thì chưa — nó chỉ đang đợi.',
+            nut:'Để nó ngủ lại', bao:'Rồng đã mở mắt và đang nhìn bạn.' }
+  };
+
+  function doi(){
+    thuc = !thuc;
+    var t = thuc ? CHU.thuc : CHU.ngu;
+    san.classList.toggle('day', thuc);
+    tieu.textContent = t.tieu;
+    mo.textContent   = t.mo;
+    nut.textContent  = t.nut;
+    nut.setAttribute('aria-pressed', String(thuc));
+    bao.textContent  = t.bao;
+  }
+
+  san.addEventListener('click', doi);
+  nut.addEventListener('click', function(e){ e.stopPropagation(); doi(); });
+
+  // ---- tro bay: dựng một lần, để CSS lo phần chạy -------------------------
+  var tro = document.getElementById('tro');
+  var manh = document.createDocumentFragment();
+  for (var i = 0; i < 26; i++) {
+    var h = document.createElement('i');
+    h.style.left = (Math.random() * 100).toFixed(2) + '%';
+    h.style.setProperty('--lech', (Math.random() * 80 - 40).toFixed(0) + 'px');
+    h.style.animationDuration = (9 + Math.random() * 11).toFixed(1) + 's';
+    h.style.animationDelay = (-Math.random() * 18).toFixed(1) + 's';
+    var r = (1 + Math.random() * 2).toFixed(1);
+    h.style.width = r + 'px';
+    h.style.height = r + 'px';
+    manh.appendChild(h);
+  }
+  tro.appendChild(manh);
+})();
+</script>
+</body>
+</html>
