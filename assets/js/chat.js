@@ -3,7 +3,7 @@
 // Tự gắn vào mọi trang có nạp file này. Chỉ hiện khi đã đăng nhập.
 // Nạp bằng thẻ <script type="module"> trỏ tới file này, nhớ kèm ?v= giống các trang khác.
 // =============================================================================
-import { supabase, getProfile, tenHienThi, dichLoi } from './auth.js?v=9';
+import { supabase, getProfile, tenHienThi, dichLoi } from './auth.js?v=10';
 
 const CSS = `
 .ash-chat, .ash-chat * { box-sizing:border-box; }
